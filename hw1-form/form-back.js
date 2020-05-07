@@ -13,7 +13,7 @@ webserver.get('/form', (req, res) => {
     if(isCorrectLogin && isCorrectPassword){
       res.send(createForm(login, password, ''));
     } else {
-      res.send(createForm(login, password, 'Data is not valid'));
+      res.send(createForm('', '', 'Data is not valid'));
     }
 });
 
