@@ -6,14 +6,14 @@ const port = 7580;
 
 webserver.get('/form', (req, res) => { 
     console.log(`req.query = ${req.query}`);
-    let login = req.query.login;
-    let password = req.query.password;
+    let login = req.query.login ? req.query.login : '';
+    let password = req.query.password ? req.query.password : '';
     let isCorrectLogin = login && login.length > 5;
     let isCorrectPassword = password && password.length > 9;
     if(isCorrectLogin && isCorrectPassword){
-      res.send(createForm(login, password, ''));
+      res.send(`User logged in successfully`);
     } else {
-      res.send(createForm('', '', 'Data is not valid'));
+      res.send(createForm(login, password, 'Data is not valid'));
     }
 });
 
