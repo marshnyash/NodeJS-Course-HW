@@ -5,12 +5,16 @@ const webserver = express(); // создаём веб-сервер
 const port = 7580;
 
 webserver.get('/form', (req, res) => { 
-    console.log(`req.query = ${req.query}`);
-    let login = req.query.login ? req.query.login : '';
-    let password = req.query.password ? req.query.password : '';
+    let login = req.query.login;
+    let password = req.query.password;
+
     let isCorrectLogin = login && login.length > 5;
     let isCorrectPassword = password && password.length > 9;
-    if(isCorrectLogin && isCorrectPassword){
+    
+    if(login == undefined && password == undefined){
+      
+      res.send(createForm('', '', ''));
+    } else if(isCorrectLogin && isCorrectPassword){
       res.send(`You logged wuth login ${login} in successfully`);
     } else {
       res.send(createForm(login, password, 'Data is not valid'));
