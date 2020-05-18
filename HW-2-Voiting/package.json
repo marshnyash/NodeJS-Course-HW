@@ -1,0 +1,29 @@
+{
+  "name": "Voting",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Voting-back.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "react": "^15.6.2",
+    "react-dom": "^15.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.3"
+  },
+  "scripts": {
+    "start": "node Voting-back",
+    "build": "node nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marshnyash/NodeJS-Course-HW.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marshnyash/NodeJS-Course-HW/issues"
+  },
+  "homepage": "https://github.com/marshnyash/NodeJS-Course-HW#readme"
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voting</title>
+</head>
+
+<div id="statistics">
+  <h3>Статистика</h3>
+</div>
+
+<body>
+  <script>
+    async function getVariantsData() {
+      const variantsUrl = `http://178.172.195.18:7580/variants`;
+      const votingData = await fetch(variantsUrl)
+        .then(response => response.text())
+        .then(txt => {
+          createForm(txt);
+        })
+        .catch((error) => {
+          console.log('Request variants failed', error)
+        });
+    }
+    getVariantsData();
+
+    async function createStatData() {
+      const statUrl = `http://178.172.195.18:7580/stat`;
+      const statData = await fetch(statUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: JSON.stringify({
+            a: 1,
+            b: 'Textual content'
+          })
+        })
+        .then(response => response.json())
+        .then(res => {
+          setStatistics(res);
+        })
+        .catch((error) => {
+          console.log('Request stat failed', error)
+        });
+    }
+
+    createStatData();
+
+    function createForm(str) {
+      const element = document.createElement('div');
+      const statisticsBlock = document.getElementById('statistics');
+      element.innerHTML = str;
+      statisticsBlock.parentNode.insertBefore(element, statisticsBlock.nextSibling)
+    }
+
+    function setStatistics(res) {
+      const statBlock = document.getElementById('statistics');
+      for (let prop in res) {
+        statBlock.appendChild(document.createElement("p")).innerText = `${res[prop].text} ${res[prop].count}`;
+      }
+    }
+  </script>
+</body>
+
+</html>
