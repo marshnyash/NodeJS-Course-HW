@@ -9,16 +9,25 @@
 
 <div id="statistics">
   <h3>Статистика</h3>
+  <p data-id="nedzen">Не дзен: </p>
+  <p data-id="dzen">Дзен: </p>
+  <p data-id="pdzen">Полный дзен: </p>
 </div>
+
+<form method=POST action="http://178.172.195.18:7580/vote">
+  <p><b>Какое у вас состояние разума?</b></p>
+  <div id="radio-block"> </div>
+  <p><input type="submit" value="Выбрать"></p>
+</form>
 
 <body>
   <script>
     async function getVariantsData() {
       const variantsUrl = `http://178.172.195.18:7580/variants`;
       const votingData = await fetch(variantsUrl)
-        .then(response => response.text())
-        .then(txt => {
-          createForm(txt);
+        .then(response => response.json())
+        .then(data => {
+          createForm(data);
         })
         .catch((error) => {
           console.log('Request variants failed', error)
@@ -27,16 +36,13 @@
     getVariantsData();
 
     async function createStatData() {
-      const statUrl = `http://178.172.195.18:7580/stat`;
+      const statUrl = `http://178.172.195.18:7580/stat`; // http://localhost:7580
       const statData = await fetch(statUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
-          body: JSON.stringify({
-            a: 1,
-            b: 'Textual content'
-          })
+          body: JSON.stringify({})
         })
         .then(response => response.json())
         .then(res => {
@@ -49,17 +55,20 @@
 
     createStatData();
 
-    function createForm(str) {
-      const element = document.createElement('div');
-      const statisticsBlock = document.getElementById('statistics');
-      element.innerHTML = str;
-      statisticsBlock.parentNode.insertBefore(element, statisticsBlock.nextSibling)
+    function createForm(formData) {
+      const elem = document.getElementById('radio-block');
+      for (let i in formData) {
+        elem.appendChild(document.createElement("p")).innerHTML =
+          `<input name="selection" type="radio" value="${formData[i].id}"> ${formData[i].text}</>`;
+      }
     }
 
     function setStatistics(res) {
-      const statBlock = document.getElementById('statistics');
-      for (let prop in res) {
-        statBlock.appendChild(document.createElement("p")).innerText = `${res[prop].text} ${res[prop].count}`;
+      const statisticList = document.querySelectorAll('div#statistics p');
+      for (let i in res) {
+        if (res[i].id === statisticList[i].dataset.id) {
+          statisticList[i].innerText += ` ${res[i].count}`;
+        }
       }
     }
   </script>

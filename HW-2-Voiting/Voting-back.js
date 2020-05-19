@@ -3,7 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-let jsonData = require('./data.json');
+let statistics = require('./statistics.json');
+let formData = require('./formData.json');
 
 const webserver = express();
 
@@ -30,8 +31,8 @@ webserver.get('/variants', (req, res) => {
   logLineSync(logFN,`[${port}] service1 called`);
   res.header('Access-Control-Allow-Origin', "*");
   res.header('Access-Control-Allow-Headers', "*");
-  res.setHeader("Content-Type", "text/html");
-  res.send(createVotingTmp());
+  res.setHeader("Content-Type", "application/json");
+  res.send(formData);
 });
 
 webserver.post('/stat', (req, res) => { 
@@ -39,7 +40,7 @@ webserver.post('/stat', (req, res) => {
   res.header('Access-Control-Allow-Origin', "*");
   res.header('Access-Control-Allow-Headers', "*");
   res.setHeader("Content-Type", "application/json");
-  res.send(jsonData);
+  res.send(statistics);
 });
 
 
@@ -49,10 +50,10 @@ webserver.post('/vote', (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const reqData = req.body;
   if(Object.keys(reqData).length){
-    const selectedElem = jsonData.find(e => e.id === reqData.selection);
+    const selectedElem = statistics.find(e => e.id === reqData.selection);
     ++selectedElem.count;
-    const jsonString = JSON.stringify(jsonData)
-    fs.writeFile('data.json', jsonString, err => {
+    const jsonString = JSON.stringify(statistics)
+    fs.writeFile('statistics.json', jsonString, err => {
       err ? console.log('Error writing file', err) : console.log('Successfully wrote file')
     });
     res.send("Ваш голос принят успешно");
@@ -60,18 +61,6 @@ webserver.post('/vote', (req, res) => {
     res.send("Вы не проголосовали");
   };
 });
-
-function createVotingTmp() { 
-  return `
-    <form method=POST action="http://178.172.195.18:7580/vote"> 
-      <p><b>Какое у вас состояние разума?</b></p>
-      <p><input name="selection" type="radio" value="nedzen"> Не дзен</p>
-      <p><input name="selection" type="radio" value="dzen"> Дзен</p>
-      <p><input name="selection" type="radio" value="pdzen" > Полный дзен</p>
-      <p><input type="submit" value="Выбрать"></p>
-    </form>
-  ` 
-}
 
 webserver.listen(port,()=>{
   logLineSync(logFN,`web server running on port ${port}`);
