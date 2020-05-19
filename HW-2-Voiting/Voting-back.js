@@ -22,6 +22,10 @@ function logLineSync(logFilePath,logLine) {
   fs.closeSync(logFd);
 }
 
+webserver.get('/main', (req, res) => { 
+  res.sendFile(__dirname + '/Voting-front.html');
+});
+
 webserver.get('/variants', (req, res) => { 
   logLineSync(logFN,`[${port}] service1 called`);
   res.header('Access-Control-Allow-Origin', "*");
@@ -29,7 +33,6 @@ webserver.get('/variants', (req, res) => {
   res.setHeader("Content-Type", "text/html");
   res.send(createVotingTmp());
 });
-
 
 webserver.post('/stat', (req, res) => { 
   logLineSync(logFN,`[${port}] service1 called`);
@@ -58,9 +61,9 @@ webserver.post('/vote', (req, res) => {
   };
 });
 
-function createVotingTmp() {
+function createVotingTmp() { 
   return `
-    <form method=POST action="http://178.172.195.18:7580//vote">
+    <form method=POST action="http://178.172.195.18:7580/vote"> 
       <p><b>Какое у вас состояние разума?</b></p>
       <p><input name="selection" type="radio" value="nedzen"> Не дзен</p>
       <p><input name="selection" type="radio" value="dzen"> Дзен</p>
