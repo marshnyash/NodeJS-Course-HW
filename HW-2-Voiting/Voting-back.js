@@ -1,14 +1,18 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const os = require('os');
+const os = require('os'); 
 
 let statistics = require('./statistics.json');
 let formData = require('./formData.json');
 
 const webserver = express();
+const bodyParser = require('body-parser')
 
-webserver.use(express.urlencoded({extended:true}));
+webserver.use(express.urlencoded({ extended: true }));
+webserver.use(bodyParser.urlencoded({ extended: false }));
+webserver.use(bodyParser.json());
+
 
 const port = 7580;
 const logFN = path.join(__dirname, '_server.log');
@@ -46,20 +50,22 @@ webserver.post('/stat', (req, res) => {
 
 webserver.post('/vote', (req, res) => { 
   logLineSync(logFN,`[${port}] service1 called`);
-  res.setHeader("Access-Control-Allow-Origin","*"); 
+  res.header('Access-Control-Allow-Origin', "*");
+  res.header('Access-Control-Allow-Headers', "*");
   res.setHeader("Content-Type", "application/json");
   const reqData = req.body;
-  if(Object.keys(reqData).length){
-    const selectedElem = statistics.find(e => e.id === reqData.selection);
-    ++selectedElem.count;
-    const jsonString = JSON.stringify(statistics)
-    fs.writeFile('statistics.json', jsonString, err => {
+  const selectedElem = reqData.find(e => e.checked);
+  if(selectedElem){
+    const statElem = statistics.find(e => e.id === selectedElem.id);
+    ++statElem.count;
+    const statisticsStr = JSON.stringify(statistics);
+    fs.writeFile('statistics.json', statisticsStr, err => {
       err ? console.log('Error writing file', err) : console.log('Successfully wrote file')
     });
-    res.send("Ваш голос принят успешно");
+    res.send('ok');
   } else {
-    res.send("Вы не проголосовали");
-  };
+    res.send(`Новых голосов нет`);
+  }
 });
 
 webserver.listen(port,()=>{

@@ -9,21 +9,22 @@
 
 <div id="statistics">
   <h3>Статистика</h3>
-  <p data-id="nedzen">Не дзен: </p>
-  <p data-id="dzen">Дзен: </p>
-  <p data-id="pdzen">Полный дзен: </p>
+  <p data-id="nedzen">Не дзен: <span></span></p>
+  <p data-id="dzen">Дзен: <span></span></p>
+  <p data-id="pdzen">Полный дзен: <span></span></p>
 </div>
 
-<form method=POST action="http://178.172.195.18:7580/vote">
+<form action="#">
+  <!--  method=POST action="http://178.172.195.18:7580/vote" -->
   <p><b>Какое у вас состояние разума?</b></p>
   <div id="radio-block"> </div>
-  <p><input type="submit" value="Выбрать"></p>
+  <button onclick="configureFormData(event)">Выбрать</button>
 </form>
 
 <body>
   <script>
     async function getVariantsData() {
-      const variantsUrl = `http://178.172.195.18:7580/variants`;
+      const variantsUrl = `http://178.172.195.18:7580/variants`; // http://178.172.195.18:7580/variants
       const votingData = await fetch(variantsUrl)
         .then(response => response.json())
         .then(data => {
@@ -67,9 +68,39 @@
       const statisticList = document.querySelectorAll('div#statistics p');
       for (let i in res) {
         if (res[i].id === statisticList[i].dataset.id) {
-          statisticList[i].innerText += ` ${res[i].count}`;
+          statisticList[i].childNodes[1].textContent = ` ${res[i].count}`;
+
         }
       }
+    }
+
+    function configureFormData(event) {
+      event.preventDefault();
+      const inputList = document.querySelectorAll('div#radio-block input');
+      const updatedFormList = [];
+      inputList.forEach(e => {
+        updatedFormList.push({
+          id: e.value,
+          checked: e.checked
+        });
+      });
+      sendFormData(updatedFormList);
+    }
+
+    async function sendFormData(formData) {
+      const voteUrl = `http://178.172.195.18:7580/vote`; // http://localhost:7580
+      const voteData = await fetch(voteUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(formData)
+      });
+      if (voteData.status !== 200) {
+        console.log(`Looks like there was a problem. Status Code:  ${response.status}`);
+        return;
+      }
+      const statCall = await createStatData();
     }
   </script>
 </body>
