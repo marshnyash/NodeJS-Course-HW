@@ -15,11 +15,26 @@
 </div>
 
 <form action="#">
-  <!--  method=POST action="http://178.172.195.18:7580/vote" -->
   <p><b>Какое у вас состояние разума?</b></p>
   <div id="radio-block"> </div>
   <button onclick="configureFormData(event)">Выбрать</button>
 </form>
+
+</br>
+<div>
+  <button onclick="getStatistics('XML')">Результаты голосования в формате XML</button>
+</div>
+
+<div>
+  <button onclick="getStatistics('HTML')">Результаты голосования в формате HTML</button>
+</div>
+
+<div>
+  <button onclick="getStatistics('JSON')">Результаты голосования в формате JSON</button>
+</div>
+
+</br>
+<textarea name="statistic" id="textarea" cols="30" rows="10"></textarea>
 
 <body>
   <script>
@@ -39,11 +54,10 @@
     async function createStatData() {
       const statUrl = `http://178.172.195.18:7580/stat`; // http://localhost:7580
       const statData = await fetch(statUrl, {
-          method: 'POST',
+          method: 'GET',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify({})
         })
         .then(response => response.json())
         .then(res => {
@@ -88,7 +102,7 @@
     }
 
     async function sendFormData(formData) {
-      const voteUrl = `http://178.172.195.18:7580/vote`; // http://localhost:7580
+      const voteUrl = `http://178.172.195.18:7580/vote`; // http://localhost:7580 // http://178.172.195.18:7580
       const voteData = await fetch(voteUrl, {
         method: 'POST',
         headers: {
@@ -101,6 +115,114 @@
         return;
       }
       const statCall = await createStatData();
+    }
+
+    async function getStatistics(type) {
+      const fetchOptions = {
+        method: "GET",
+        headers: getContentType(type),
+      };
+      const response = await fetch('http://178.172.195.18:7580/stat', fetchOptions);
+      let data;
+      if (type === `JSON`) {
+        data = await response.json();
+        data = JSON.stringify(data);
+      } else if (type === `XML`) {
+        const xmlStr = await response.text();
+        data = parseXml(xmlStr);
+        data = JSON.stringify(data);
+      } else if (type === `HTML`) {
+        data = await response.text();
+      }
+      drawHTML(data);
+    }
+
+    function drawHTML(data) {
+      const textarea = document.getElementById('textarea');
+      textarea.innerHTML = data;
+    }
+
+    function getContentType(type) {
+      switch (type) {
+        case 'XML':
+          return {
+            'Content-Type': 'application/xml'
+          };
+        case 'HTML':
+          return {
+            'Content-Type': 'text/html; charset=utf-8'
+          };
+        case 'JSON':
+          return {
+            'Content-Type': 'application/json'
+          };
+      }
+    }
+
+    function parseXml(xml, arrayTags) {
+      var dom = null;
+      if (window.DOMParser) {
+        dom = (new DOMParser()).parseFromString(xml, "text/xml");
+      } else
+      if (window.ActiveXObject) {
+        dom = new ActiveXObject('Microsoft.XMLDOM');
+        dom.async = false;
+        if (!dom.loadXML(xml)) {
+          throw dom.parseError.reason + " " + dom.parseError.srcText;
+        }
+      } else {
+        throw "cannot parse xml string!";
+      }
+
+      function isArray(o) {
+        return Object.prototype.toString.apply(o) === '[object Array]';
+      }
+
+      function parseNode(xmlNode, result) {
+        if (xmlNode.nodeName == "#text") {
+          var v = xmlNode.nodeValue;
+          if (v.trim()) {
+            result['#text'] = v;
+          }
+          return;
+        }
+
+        var jsonNode = {};
+        var existing = result[xmlNode.nodeName];
+        if (existing) {
+          if (!isArray(existing)) {
+            result[xmlNode.nodeName] = [existing, jsonNode];
+          } else {
+            result[xmlNode.nodeName].push(jsonNode);
+          }
+        } else {
+          if (arrayTags && arrayTags.indexOf(xmlNode.nodeName) != -1) {
+            result[xmlNode.nodeName] = [jsonNode];
+          } else {
+            result[xmlNode.nodeName] = jsonNode;
+          }
+        }
+
+        if (xmlNode.attributes) {
+          var length = xmlNode.attributes.length;
+          for (var i = 0; i < length; i++) {
+            var attribute = xmlNode.attributes[i];
+            jsonNode[attribute.nodeName] = attribute.nodeValue;
+          }
+        }
+
+        var length = xmlNode.childNodes.length;
+        for (var i = 0; i < length; i++) {
+          parseNode(xmlNode.childNodes[i], jsonNode);
+        }
+      }
+
+      var result = {};
+      for (let i = 0; i < dom.childNodes.length; i++) {
+        parseNode(dom.childNodes[i], result);
+      }
+
+      return result;
     }
   </script>
 </body>
