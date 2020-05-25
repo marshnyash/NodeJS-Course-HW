@@ -49,9 +49,8 @@ webserver.get('/variants', (req, res) => {
 webserver.get('/stat', (req, res) => { 
   logLineSync(logFN,`[${port}] service1 called`);
 
-  const contentType = req.headers['content-type'];
   res.setHeader("Access-Control-Allow-Origin","*"); 
-
+  const clientAccept = req.headers.accept;
   const ETag = crypto.createHash('sha256').update(``).digest('base64');
   let ifNoneMatch = req.header("If-None-Match");
   res.setHeader("Cache-Control","public, max-age=0"); 
@@ -59,15 +58,15 @@ webserver.get('/stat', (req, res) => {
   if (ifNoneMatch && (ifNoneMatch === ETag)) {
     res.status(304).end();
   } else {
-    if (contentType === "application/json") {
+    if (clientAccept === "application/json") {
       res.setHeader("Content-Type", "application/json");
       res.send(statistics);
     }
-    else if (contentType === "application/xml") {
+    else if (clientAccept === "application/xml") {
       res.setHeader("Content-Type", "application/xml");
       res.send(configurateXMLData());
     }
-    else if (contentType === "text/html; charset=utf-8"){
+    else if (clientAccept === "text/html; charset=utf-8"){
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       res.send(configurateHTMLData());
     }
