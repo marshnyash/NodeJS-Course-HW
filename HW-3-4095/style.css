@@ -1,0 +1,91 @@
+* {
+  font-family: sans-serif;
+}
+
+.container {
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.title {
+  text-align: center;
+}
+
+p {
+  margin: 7px 0;
+  font-weight: bold;
+}
+
+.interactive-area {
+  margin: 0 0 15px;
+}
+
+.header {
+  display: grid;
+  grid-template: auto / 1fr 4fr;
+}
+
+.header select,
+.header input {
+  height: 40px;
+  padding: 10px 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  background: #f3f3f3;
+}
+
+.header input {
+  margin-left: -5px;
+  border-bottom-right-radius: 7px;
+  border-top-right-radius: 7px;
+}
+
+.header select {
+  border-bottom-left-radius: 7px;
+  border-top-left-radius: 7px;
+}
+
+.btn {
+  display: flex;
+  margin-left: auto;
+  justify-content: center;
+  background: #008eff;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 7px;
+  min-width: 100px;
+}
+
+.btn:hover {
+  background: #005aa2;
+  cursor: pointer;
+}
+
+.params-grid,
+.headers-grid {
+  display: grid;
+  grid-template: auto / 1fr 1fr;
+}
+
+.params-grid input, 
+.params-grid div,
+.headers-grid input,
+.headers-grid div,
+.body-section textarea,
+.response-area textarea {
+  padding: 10px;
+  border: 1px solid #e2e2e2;
+  font-size: 14px;
+
+}
+
+.body-section,
+.response-txt-area-block {
+  display: grid;
+  grid-template: auto / 1fr;
+}
+
+.response-area {
+  margin: 30px 0;
+}

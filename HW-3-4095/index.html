@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Postman</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <section class="container">
+    <h2 class="title">Postman</h2>
+    <form>
+      <h3>Request</h3>
+      <div class="header interactive-area">
+        <select name="method" id="method">
+          <option value="get">GET</option>
+          <option value="post">POST</option>
+        </select>
+        <input type="text" placeholder="Enter request URL" name="url">
+      </div>
+
+      <p>Query Params</p>
+      <div class="params interactive-area">
+        <div class="params-grid">
+          <div>KEY</div>
+          <div>VALUE</div>
+        </div>
+        <div class="params-grid">
+          <input type="text" name="key1" placeholder="Key">
+          <input type="text" name="value1" placeholder="Value">
+        </div>
+        <div class="params-grid">
+          <input type="text" name="key2" placeholder="Key">
+          <input type="text" name="value2" placeholder="Value">
+        </div>
+      </div>
+
+      <p>Headers</p>
+      <div class="headers">
+        <div class="headers-grid">
+          <div>KEY</div>
+          <div>VALUE</div>
+        </div>
+        <div class="headers-grid">
+          <div>Content-type</div>
+          <select name="content-type" id="content-type">
+            <option value="content-json" selected>application/json</option>
+            <option value="content-xml">application/xml</option>
+            <option value="content-html">text/html; charset=utf-8</option>
+          </select>
+        </div>
+        <div class="headers-grid interactive-area">
+          <div>Accept</div>
+          <select name="accept-type" id="accept-type">
+            <option value="accept-json" selected>application/json</option>
+            <option value="accept-xml">application/xml</option>
+            <option value="accept-html">text/html; charset=utf-8</option>
+          </select>
+        </div>
+      </div>
+
+      <p>Body</p>
+      <div class="interactive-area body-section">
+        <textarea name="body" id="body" cols="30" rows="10"></textarea>
+      </div>
+
+      <button onclick="send(event)" class="btn">Submit</button>
+    </form>
+
+    <div class="response-area">
+      <h3>Respons</h3>
+      <div class="response-txt-area-block">
+        <textarea name="response-txt-area" id="response-txt-area" cols="30" rows="10"></textarea>
+      </div>
+    </div>
+  </section>
+
+
+  <script>
+    function send(event) {
+      event.preventDefault();
+      console.log('submit');
+      getData();
+      console.log('data: ', getData());
+    }
+
+    function getData() {
+      const methodData = document.getElementById('method').value;
+      const contentTypeData = document.getElementById('content-type').value;
+      const acceptTypeData = document.getElementById('accept-type').value;
+      const bodyData = document.getElementById('body').value;
+      const urlData = document.querySelector('input[name="url"]').value;
+      const key1Data = document.querySelector('input[name="key1"]').value;
+      const value1Data = document.querySelector('input[name="value1"]').value;
+      const key2Data = document.querySelector('input[name="key2"]').value;
+      const value2Data = document.querySelector('input[name="value2"]').value;
+      return {
+        methodData,
+        contentTypeData,
+        acceptTypeData,
+        bodyData,
+        urlData,
+        key1Data,
+        value1Data,
+        key2Data,
+        value2Data
+      }
+    }
+  </script>
+
+</body>
+
+</html>
